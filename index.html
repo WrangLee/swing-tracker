@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Swing Setup Pro</title>
+<style>
+:root{--bg:#f5f7fb;--panel:#fff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--nav:#0f172a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+header{padding:16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+h1{margin:0;font-size:24px}
+small{color:var(--muted)}
+main{max-width:1100px;margin:auto;padding:16px;display:grid;grid-template-columns:380px 1fr;gap:16px}
+@media(max-width:850px){main{grid-template-columns:1fr}header{position:static}}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 12px 30px rgba(15,23,42,.06)}
+label{display:block;font-size:12px;font-weight:700;color:#334155;margin:10px 0 5px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:12px;font-size:16px}
+textarea{min-height:90px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:600px){.row,.row3{grid-template-columns:1fr}}
+button{border:0;border-radius:999px;padding:10px 14px;background:#0f172a;color:white;font-weight:800;margin:4px 4px 4px 0}
+button.light{background:#e2e8f0;color:#0f172a}
+button.red{background:#fee2e2;color:#991b1b}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+.stat b{display:block;font-size:22px}
+.tabs{display:flex;gap:6px;overflow:auto;margin-bottom:12px}
+.tabs button{background:#fff;color:#0f172a;border:1px solid var(--line);white-space:nowrap}
+.tabs button.active{background:#0f172a;color:#fff}
+.stock{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}
+.top{display:flex;justify-content:space-between;gap:10px}
+.ticker{font-size:22px;font-weight:900}
+.meta{font-size:12px;color:var(--muted)}
+.badge{border-radius:999px;padding:6px 10px;font-weight:900;font-size:13px}
+.A{background:#dcfce7;color:#166534}.B{background:#dbeafe;color:#1d4ed8}.C{background:#fef3c7;color:#92400e}.F{background:#fee2e2;color:#991b1b}
+.levels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+@media(max-width:700px){.levels{grid-template-columns:repeat(2,1fr)}}
+.level{background:#f8fafc;border:1px solid #eef2f7;border-radius:12px;padding:8px;font-size:12px;color:var(--muted)}
+.level b{display:block;color:#0f172a;font-size:14px}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:7px 0}
+.check input{width:auto}
+.score{background:#0f172a;color:white;border-radius:14px;padding:12px;margin-top:10px;display:flex;justify-content:space-between}
+pre{white-space:pre-wrap;font-family:inherit}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Swing Setup Pro</h1>
+  <small>Chart review tracker — A/B/C/F grading, levels, checklist, notes, and local storage</small>
+</header>
+
+<main>
+  <section class="card">
+    <h3>New Chart Review</h3>
+
+    <input type="hidden" id="editId">
+
+    <label>Ticker</label>
+    <input id="ticker" placeholder="Example: ADEA">
+
+    <div class="row">
+      <div>
+        <label>Grade</label>
+        <select id="grade">
+          <option value="A">A — Clean Candidate</option>
+          <option value="B">B — Watchlist</option>
+          <option value="C">C — Not Ready</option>
+          <option value="F">F — Skip</option>
+        </select>
+      </div>
+      <div>
+        <label>Action</label>
+        <select id="action">
+          <option>Ready if Triggered</option>
+          <option>Watch Pullback</option>
+          <option>Watch Breakout</option>
+          <option>Not Ready</option>
+          <option>Skip</option>
+          <option>Review Later</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Setup Type</label>
+    <select id="setup">
+      <option>Strong stock pullback</option>
+      <option>Base near 52-week high</option>
+      <option>Breakout watch</option>
+      <option>Shakeout / demand tail</option>
+      <option>Too extended</option>
+      <option>Messy chart</option>
+      <option>Other</option>
+    </select>
+
+    <div class="row3">
+      <div><label>Entry / Trigger</label><input id="entry" placeholder="33.50"></div>
+      <div><label>Stop</label><input id="stop" placeholder="29.80"></div>
+      <div><label>Target</label><input id="target" placeholder="38.00"></div>
+    </div>
+
+    <div class="row3">
+      <div><label>Support</label><input id="support" placeholder="30.60"></div>
+      <div><label>Resistance</label><input id="resistance" placeholder="34.00"></div>
+      <div><label>R:R</label><input id="rr" readonly placeholder="Auto"></div>
+    </div>
+
+    <label>Checklist</label>
+    <label class="check"><input type="checkbox" data-check> Near 52-week high</label>
+    <label class="check"><input type="checkbox" data-check> Above 50-day MA</label>
+    <label class="check"><input type="checkbox" data-check> Above 200-day MA</label>
+    <label class="check"><input type="checkbox" data-check> Stronger than SPY / QQQ</label>
+    <label class="check"><input type="checkbox" data-check> Clean base or controlled pullback</label>
+    <label class="check"><input type="checkbox" data-check> Volume dry-up during pullback</label>
+    <label class="check"><input type="checkbox" data-check> Demand tail or shakeout</label>
+    <label class="check"><input type="checkbox" data-check> Clear trigger bar</label>
+    <label class="check"><input type="checkbox" data-check> Clear stop below structure</label>
+    <label class="check"><input type="checkbox" data-check> At least 2R potential</label>
+
+    <div class="score">
+      <div>Score: <b id="score">0/10</b></div>
+      <div>Suggested: <b id="suggested">F</b></div>
+    </div>
+
+    <label>One-Sentence Verdict</label>
+    <textarea id="verdict" placeholder="Paste short verdict here..."></textarea>
+
+    <label>Full Analysis</label>
+    <textarea id="analysis" placeholder="Paste full analysis here..."></textarea>
+
+    <label>Next Alerts</label>
+    <input id="alerts" placeholder="Example: 30.60 pullback; 34.00 breakout">
+
+    <button onclick="saveStock()">Save Stock</button>
+    <button class="light" onclick="useSuggested()">Use Suggested Grade</button>
+    <button class="light" onclick="clearForm()">Clear</button>
+  </section>
+
+  <section>
+    <div class="stats" id="stats"></div>
+
+    <input id="search" placeholder="Search ticker or notes..." oninput="render()" style="margin-bottom:10px">
+
+    <div class="tabs" id="tabs"></div>
+    <div id="list"></div>
+
+    <button class="light" onclick="exportBackup()">Export Backup</button>
+    <button class="light" onclick="exportCSV()">Export CSV</button>
+  </section>
+</main>
+
+<script>
+let stocks = JSON.parse(localStorage.getItem("swingSetupPro") || "[]");
+let active = "All";
+
+const $ = id => document.getElementById(id);
+
+["entry","stop","target"].forEach(id => $(id).addEventListener("input", calcRR));
+document.querySelectorAll("[data-check]").forEach(x => x.addEventListener("change", updateScore));
+
+function clean(x){return String(x||"").trim();}
+function num(x){let n=parseFloat(String(x).replace(/[^0-9.-]/g,"")); return Number.isFinite(n)?n:null;}
+
+function calcRR(){
+  let e=num($("entry").value), s=num($("stop").value), t=num($("target").value);
+  if(e!==null && s!==null && t!==null && e>s){
+    let rr=(t-e)/(e-s);
+    $("rr").value = rr>0 ? rr.toFixed(2)+"R" : "Invalid";
+  } else $("rr").value="";
+}
+
+function updateScore(){
+  let checks=[...document.querySelectorAll("[data-check]")];
+  let score=checks.filter(x=>x.checked).length;
+  $("score").textContent=score+"/10";
+  let g="F";
+  if(score>=9) g="A";
+  else if(score>=7) g="B";
+  else if(score>=5) g="C";
+  $("suggested").textContent=g;
+  return score;
+}
+
+function useSuggested(){
+  $("grade").value=$("suggested").textContent;
+}
+
+function getChecks(){
+  return [...document.querySelectorAll("[data-check]")].map(x=>x.checked);
+}
+
+function setChecks(arr){
+  [...document.querySelectorAll("[data-check]")].forEach((x,i)=>x.checked=!!arr[i]);
+  updateScore();
+}
+
+function saveStock(){
+  calcRR();
+  let ticker=clean($("ticker").value).toUpperCase();
+  if(!ticker){ alert("Enter ticker"); return; }
+
+  let item={
+    id:$("editId").value || crypto.randomUUID(),
+    ticker,
+    grade:$("grade").value,
+    action:$("action").value,
+    setup:$("setup").value,
+    entry:clean($("entry").value),
+    stop:clean($("stop").value),
+    target:clean($("target").value),
+    support:clean($("support").value),
+    resistance:clean($("resistance").value),
+    rr:clean($("rr").value),
+    checklist:getChecks(),
+    score:updateScore(),
+    verdict:clean($("verdict").value),
+    analysis:clean($("analysis").value),
+    alerts:clean($("alerts").value),
+    updated:new Date().toLocaleString()
+  };
+
+  let i=stocks.findIndex(x=>x.id===item.id);
+  if(i>=0) stocks[i]=item; else stocks.unshift(item);
+
+  localStorage.setItem("swingSetupPro", JSON.stringify(stocks));
+  clearForm();
+  render();
+}
+
+function clearForm(){
+  $("editId").value="";
+  ["ticker","entry","stop","target","support","resistance","rr","verdict","analysis","alerts"].forEach(id=>$(id).value="");
+  $("grade").value="B";
+  $("action").value="Watch Pullback";
+  $("setup").value="Strong stock pullback";
+  setChecks([]);
+}
+
+function gradeName(g){
+  return {A:"A — Candidate",B:"B — Watch",C:"C — Not Ready",F:"F — Skip"}[g];
+}
+
+function setTab(t){
+  active=t;
+  render();
+}
+
+function filtered(){
+  let q=clean($("search").value).toLowerCase();
+  return stocks.filter(s=>{
+    let okTab=active==="All" || s.grade===active;
+    let text=[s.ticker,s.grade,s.action,s.setup,s.verdict,s.analysis,s.alerts].join(" ").toLowerCase();
+    return okTab && (!q || text.includes(q));
+  });
+}
+
+function render(){
+  renderStats();
+  renderTabs();
+  renderList();
+}
+
+function renderStats(){
+  let c={All:stocks.length,A:0,B:0,C:0,F:0};
+  stocks.forEach(s=>c[s.grade]++);
+  $("stats").innerHTML=`
+    <div class="stat"><b>${c.All}</b><span>Total</span></div>
+    <div class="stat"><b>${c.A}</b><span>A Candidates</span></div>
+    <div class="stat"><b>${c.B}</b><span>B Watch</span></div>
+    <div class="stat"><b>${c.C}</b><span>C Not Ready</span></div>
+    <div class="stat"><b>${c.F}</b><span>F Skip</span></div>`;
+}
+
+function renderTabs(){
+  let tabs=[["All","All"],["A","A Candidates"],["B","B Watch"],["C","C Not Ready"],["F","F Skip"]];
+  $("tabs").innerHTML=tabs.map(t=>`<button class="${active===t[0]?'active':''}" onclick="setTab('${t[0]}')">${t[1]}</button>`).join("");
+}
+
+function safe(s){
+  return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+
+function renderList(){
+  let data=filtered();
+  if(!data.length){
+    $("list").innerHTML=`<div class="card">No stocks here.</div>`;
+    return;
+  }
+
+  $("list").innerHTML=data.map(s=>`
+    <div class="stock">
+      <div class="top">
+        <div>
+          <div class="ticker">${safe(s.ticker)}</div>
+          <div class="meta">${safe(s.setup)} · ${safe(s.action)} · Score ${s.score}/10 · ${safe(s.updated)}</div>
+        </div>
+        <div class="badge ${s.grade}">${gradeName(s.grade)}</div>
+      </div>
+
+      <p>${safe(s.verdict || "")}</p>
+
+      <div class="levels">
+        <div class="level">Entry <b>${safe(s.entry||"—")}</b></div>
+        <div class="level">Stop <b>${safe(s.stop||"—")}</b></div>
+        <div class="level">Target <b>${safe(s.target||"—")}</b></div>
+        <div class="level">R:R <b>${safe(s.rr||"—")}</b></div>
+        <div class="level">Support <b>${safe(s.support||"—")}</b></div>
+        <div class="level">Resistance <b>${safe(s.resistance||"—")}</b></div>
+        <div class="level">Alerts <b>${safe(s.alerts||"—")}</b></div>
+        <div class="level">Action <b>${safe(s.action||"—")}</b></div>
+      </div>
+
+      <details>
+        <summary>Full Analysis</summary>
+        <pre>${safe(s.analysis||"—")}</pre>
+      </details>
+
+      <button class="light" onclick="editStock('${s.id}')">Edit</button>
+      <button class="light" onclick="copyStock('${s.id}')">Copy</button>
+      <button class="red" onclick="deleteStock('${s.id}')">Delete</button>
+    </div>
+  `).join("");
+}
+
+function editStock(id){
+  let s=stocks.find(x=>x.id===id);
+  if(!s)return;
+  $("editId").value=s.id;
+  ["ticker","grade","action","setup","entry","stop","target","support","resistance","rr","verdict","analysis","alerts"].forEach(id=>$(id).value=s[id]||"");
+  setChecks(s.checklist||[]);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function deleteStock(id){
+  if(!confirm("Delete this stock?"))return;
+  stocks=stocks.filter(x=>x.id!==id);
+  localStorage.setItem("swingSetupPro", JSON.stringify(stocks));
+  render();
+}
+
+function copyStock(id){
+  let s=stocks.find(x=>x.id===id);
+  let text=`${s.ticker} — ${gradeName(s.grade)}
+Action: ${s.action}
+Setup: ${s.setup}
+Score: ${s.score}/10
+
+Verdict:
+${s.verdict}
+
+Levels:
+Support: ${s.support}
+Resistance: ${s.resistance}
+Entry: ${s.entry}
+Stop: ${s.stop}
+Target: ${s.target}
+R:R: ${s.rr}
+
+Alerts:
+${s.alerts}
+
+Full Analysis:
+${s.analysis}`;
+  navigator.clipboard.writeText(text);
+  alert("Copied");
+}
+
+function exportBackup(){
+  let blob=new Blob([JSON.stringify(stocks,null,2)],{type:"application/json"});
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="swing-setup-pro-backup.json";
+  a.click();
+}
+
+function exportCSV(){
+  let rows=[["Ticker","Grade","Action","Setup","Score","Support","Resistance","Entry","Stop","Target","RR","Verdict","Alerts","Updated"]];
+  stocks.forEach(s=>rows.push([s.ticker,s.grade,s.action,s.setup,s.score,s.support,s.resistance,s.entry,s.stop,s.target,s.rr,s.verdict,s.alerts,s.updated]));
+  let csv=rows.map(r=>r.map(x=>`"${String(x||"").replace(/"/g,'""')}"`).join(",")).join("\n");
+  let blob=new Blob([csv],{type:"text/csv"});
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="swing-setup-pro.csv";
+  a.click();
+}
+
+updateScore();
+render();
+</script>
+</body>
+</html>
